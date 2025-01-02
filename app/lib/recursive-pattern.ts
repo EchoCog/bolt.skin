@@ -1,4 +1,4 @@
-import { MardukDaemon } from '../../marduk-evo/types';
+import { MardukDaemon } from '../types/marduk';
 
 interface RecursiveAgent {
   id: string;

@@ -1,4 +1,90 @@
-import { deleteWorker, listWorkers } from '@cloudflare/workers-sdk';
+import { unstable_dev } from 'wrangler';
+import { createInterface } from 'readline';
+import { promisify } from 'util';
+
+interface Worker {
+  name: string;
+  created_on: string;
+  modified_on: string;
+  status?: string;
+}
+
+// Create readline interface for user input
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const question = promisify(rl.question).bind(rl);
+
+async function confirmAction(prompt: string): Promise<boolean> {
+  const answer = await question(`${prompt} (yes/no): `);
+  return answer.toLowerCase() === 'yes';
+}
+
+async function deactivateWorker(apiToken: string, accountId: string, worker: Worker) {
+  console.log(`\nPreparing to deactivate worker: ${worker.name}`);
+  
+  // First safety check - User confirmation
+  const confirmDeactivate = await confirmAction(
+    `Safety Check 1/3: Are you absolutely sure you want to deactivate ${worker.name}?`
+  );
+  if (!confirmDeactivate) {
+    console.log(`Aborting deactivation of ${worker.name}`);
+    return false;
+  }
+
+  // Second safety check - Verify worker name
+  const workerNameVerification = await question(
+    `Safety Check 2/3: Please type the worker name "${worker.name}" to confirm deactivation: `
+  );
+  if (workerNameVerification !== worker.name) {
+    console.log(`Worker name verification failed for ${worker.name}`);
+    return false;
+  }
+
+  // Third safety check - Acknowledge consequences
+  const acknowledgement = await confirmAction(
+    `Safety Check 3/3: Do you acknowledge that deactivating ${worker.name} will:\n` +
+    "1. Remove it from active deployments\n" +
+    "2. Move it to dormant state\n" +
+    "3. Require manual reactivation if needed later?"
+  );
+  if (!acknowledgement) {
+    console.log(`Deactivation cancelled for ${worker.name}`);
+    return false;
+  }
+
+  try {
+    // Instead of deletion, we'll deactivate the worker
+    console.log(`\nDeactivating ${worker.name}...`);
+    
+    // Move to dormant state by disabling routes and removing from active deployments
+    await unstable_dev.updateWorker(apiToken, accountId, worker.name, {
+      status: 'dormant',
+      routes: [],
+      enabled: false
+    });
+
+    // Create a backup record
+    const timestamp = new Date().toISOString();
+    const backupInfo = {
+      name: worker.name,
+      deactivatedOn: timestamp,
+      originalStatus: worker.status,
+      reason: 'Automated cleanup process'
+    };
+
+    // Store backup info in a designated location or log
+    console.log(`\nWorker ${worker.name} has been safely deactivated`);
+    console.log('Backup information:', JSON.stringify(backupInfo, null, 2));
+    
+    return true;
+  } catch (error) {
+    console.error(`Error deactivating ${worker.name}:`, error);
+    return false;
+  }
+}
 
 async function main() {
   const apiToken = process.env.CLOUDFLARE_API_TOKEN;
@@ -12,57 +98,70 @@ async function main() {
     'bolt-cog'            // Cog deployment
   ];
 
-  // Define which ones to keep
-  const keepWorkers = [
+  // Define which ones to keep active
+  const keepActiveWorkers = [
     'bolt-echo',           // Main production worker
     'bolt-echo-staging',   // Staging environment
     'marduk-bolt',         // Keep Marduk integration
     'bolt-cog'            // Keep Cog deployment
   ];
 
-  try {
-    const workers = await listWorkers({
-      apiToken,
-      accountId,
-    });
+  if (!apiToken || !accountId) {
+    console.error('Missing required environment variables');
+    process.exit(1);
+  }
 
-    console.log('Analyzing bolt-echo related workers...');
+  try {
+    // Get list of all workers
+    const workers = await unstable_dev.listWorkers(apiToken, accountId);
     
-    for (const worker of workers) {
-      // Only process bolt-echo related workers
-      if (boltEchoWorkers.includes(worker.name)) {
-        if (!keepWorkers.includes(worker.name)) {
-          console.log(`\nRemoving worker: ${worker.name}`);
-          try {
-            await deleteWorker({
-              apiToken,
-              accountId,
-              name: worker.name,
-            });
-            console.log(`Successfully removed ${worker.name}`);
-          } catch (error) {
-            console.error(`Error removing ${worker.name}:`, error);
-          }
-        } else {
-          console.log(`\nKeeping worker: ${worker.name}`);
-        }
-      } else {
-        console.log(`\nSkipping non-bolt-echo worker: ${worker.name}`);
-      }
+    // Filter to only our bolt echo workers
+    const ourWorkers = workers.filter((w: Worker) => 
+      boltEchoWorkers.includes(w.name)
+    );
+
+    // Find workers to deactivate
+    const workersToDeactivate = ourWorkers.filter((w: Worker) => 
+      !keepActiveWorkers.includes(w.name)
+    );
+
+    if (workersToDeactivate.length === 0) {
+      console.log('No workers need to be deactivated.');
+      process.exit(0);
     }
 
-    console.log('\nCleanup complete! Current bolt-echo deployments:');
-    const remainingWorkers = await listWorkers({ apiToken, accountId });
+    console.log('\nWorkers identified for deactivation:');
+    workersToDeactivate.forEach(w => console.log(`- ${w.name}`));
+
+    // Final overall confirmation
+    const proceedWithDeactivation = await confirmAction(
+      '\nDo you want to proceed with the deactivation process?'
+    );
+
+    if (!proceedWithDeactivation) {
+      console.log('Deactivation process cancelled');
+      process.exit(0);
+    }
+
+    // Process each worker
+    for (const worker of workersToDeactivate) {
+      await deactivateWorker(apiToken, accountId, worker);
+    }
+
+    console.log('\nDeactivation process complete! Current active deployments:');
+    const remainingWorkers = await unstable_dev.listWorkers(apiToken, accountId);
     remainingWorkers
       .filter(w => boltEchoWorkers.includes(w.name))
       .forEach(w => {
         console.log(`- ${w.name}`);
-        console.log(`  Status: ${w.latest_deployment?.status}`);
-        console.log(`  Routes: ${w.routes?.map(r => r.pattern).join(', ') || 'No routes'}`);
+        console.log(`  Status: ${w.status || 'unknown'}`);
         console.log('---');
       });
   } catch (error) {
     console.error('Error managing workers:', error);
+    process.exit(1);
+  } finally {
+    rl.close();
   }
 }
 
