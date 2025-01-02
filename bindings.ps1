@@ -6,7 +6,7 @@ if (Test-Path .env.local) {
         if ($line -and !$line.StartsWith("#")) {
             $name, $value = $line -split "=", 2
             $value = $value -replace '^"(.*)"$', '$1'
-            $bindings += "--binding ${name}=${value} "
+            $bindings += "-b ${name}=${value} "
         }
     }
 }
