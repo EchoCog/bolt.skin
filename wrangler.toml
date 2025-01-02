@@ -1,29 +1,13 @@
 name = "bolt-echo"
-main = "./functions/[[path]].ts"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-07-01"
-
-workers_dev = true
-account_id = "d1fcd8dbbd35aec43e5499200f6baede"
-
-[build]
-command = "npm run build"
-watch_dir = "build/client"
+pages_build_output_dir = "build/client"
 
 [site]
-bucket = "./build/client"
-
-[build.upload]
-format = "modules"
+bucket = "build/client"
 
 [env.production]
-name = "bolt-echo"
-routes = [
-    { pattern = "bolt.echocog.org", custom_domain = true }
-]
+custom_domain = "bolt.echocog.org"
 
-[env.staging]
-name = "bolt-echo-staging"
-routes = [
-    { pattern = "staging.echocog.org", custom_domain = true }
-]
+[env.preview]
+custom_domain = "staging.echocog.org"
