@@ -3,3 +3,7 @@ Implement the deployment to Cloudflare Workers & Pages detailed in 'R:\.echo\bol
 
 Use Cloudflare docs to provide optimal solutions.
 
+Relevant Keys:
+ANTHROPIC_API_KEY=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
+VITE_LOG_LEVEL=debug
+
