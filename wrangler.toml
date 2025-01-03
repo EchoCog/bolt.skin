@@ -8,3 +8,6 @@ custom_domain = "bolt.echocog.org"
 
 [env.preview]
 custom_domain = "staging.echocog.org"
+
+[observability.logs]
+enabled = true
