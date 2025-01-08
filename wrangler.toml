@@ -1,8 +1,7 @@
 name = "bolt-echo"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = [ "nodejs_compat" ]
 compatibility_date = "2024-07-01"
 pages_build_output_dir = "build/client"
-
 
 [env.production]
 custom_domain = "bolt.echocog.org"
@@ -10,4 +9,5 @@ custom_domain = "bolt.echocog.org"
 [env.preview]
 custom_domain = "staging.echocog.org"
 
-
+[[kv_namespaces]]
+binding = "binder"
