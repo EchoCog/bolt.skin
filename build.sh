@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Remove the .tool-versions file to prevent asdf from trying to use pnpm
-rm -f .tool-versions
+# Ensure we're in the right directory
+cd "$(dirname "$0")"
 
 # Copy the build-specific package.json
 cp package.build.json package.json
