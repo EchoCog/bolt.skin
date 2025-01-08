@@ -2,12 +2,8 @@
   "build": {
     "command": "chmod +x build.sh && ./build.sh",
     "environment": {
-      "NODE_VERSION": "18.18.0",
-      "NPM_VERSION": "10.2.4"
+      "NODE_VERSION": "18"
     },
     "output": "build/client"
-  },
-  "installCommand": "npm install",
-  "buildCommand": "npm run build",
-  "framework": "remix"
+  }
 }
