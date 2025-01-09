@@ -8,12 +8,13 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 export default defineConfig({
   plugins: [UnoCSS(), remix(), nodePolyfills(), optimizeCssModules(), tsconfigPaths()],
   build: {
+    target: 'es2022',
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', '@remix-run/react', 'xterm', '@xterm/addon-fit', '@xterm/addon-web-links'],
-        },
-      },
+          vendor: []
+        }
+      }
     },
     chunkSizeWarningLimit: 500,
   },
