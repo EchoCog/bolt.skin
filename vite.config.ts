@@ -17,14 +17,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'emacs': ['./app/lib/emacs-lisp.ts'],
           'vendor': [
             'react',
             'react-dom',
             '@remix-run/react',
             'xterm',
-            'xterm-addon-fit',
-            'xterm-addon-web-links'
+            '@xterm/addon-fit',
+            '@xterm/addon-web-links'
           ]
         }
       }
