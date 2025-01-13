@@ -1,5 +1,5 @@
 name = "bolt-echo"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = [ "nodejs_compat" ]
 compatibility_date = "2024-07-01"
 pages_build_output_dir = "build/client"
 
@@ -8,3 +8,7 @@ custom_domain = "bolt.echocog.org"
 
 [env.preview]
 custom_domain = "staging.echocog.org"
+# <<<<<<< codespace-probable-winner-wr5j9j5x59xc9rx6
+
+# =======
+# >>>>>>> main
