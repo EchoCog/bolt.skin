@@ -19,7 +19,8 @@
     "typegen": "wrangler types",
     "preview": "pnpm run build && pnpm run start",
     "bindings": "./bindings.sh",
-    "migrate-sass": "npx sass-migrator import ."
+    "migrate-sass": "npx sass-migrator import .",
+    "migrate-sass": "pnpm exec sass-migrator module app/styles/**/*.scss"
   },
   "engines": {
     "node": ">=18.18.0"
