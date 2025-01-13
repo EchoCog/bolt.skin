@@ -48,7 +48,7 @@ jobs:
 
       # Step 3: Install Dependencies
       - name: Install Dependencies
-        run: pnpm install -g wrangler && pnpm install
+        run: pnpm install -g wrangler && pnpm install --no-frozen-lockfile
 
       # Step 4: Build Project
       - name: Build Project
