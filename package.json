@@ -56,8 +56,10 @@
     "@xterm/addon-web-links": "^0.11.0",
     "@xterm/xterm": "^5.5.0",
     "ai": "^3.3.4",
+    "cloudflare": "^3.5.0",
     "date-fns": "^3.6.0",
     "diff": "^5.2.0",
+    "dompurify": "^3.2.3",
     "framer-motion": "^11.2.12",
     "isbot": "^4.1.0",
     "istextorbinary": "^9.5.0",
@@ -76,8 +78,7 @@
     "remix-island": "^0.2.0",
     "remix-utils": "^7.6.0",
     "shiki": "^1.9.1",
-    "unist-util-visit": "^5.0.0",
-    "dompurify": "^3.2.3"
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@blitz/eslint-plugin": "0.1.0",
