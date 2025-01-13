@@ -4,9 +4,10 @@ import UnoCSS from 'unocss/vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { optimizeCssModules } from 'vite-plugin-optimize-css-modules';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [UnoCSS(), remix(), nodePolyfills(), optimizeCssModules(), tsconfigPaths()],
+  plugins: [UnoCSS(), remix(), nodePolyfills(), optimizeCssModules(), tsconfigPaths(), react()],
   build: {
     target: 'es2022',
     rollupOptions: {
@@ -18,4 +19,10 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 500,
   },
+  optimizeDeps: {
+    include: ['react-dom/server']
+  },
+  ssr: {
+    external: ['react-dom/server']
+  }
 });
