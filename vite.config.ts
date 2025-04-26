@@ -41,6 +41,17 @@ function chrome129IssuePlugin() {
     name: 'chrome129IssuePlugin',
     configureServer(server: ViteDevServer) {
       server.middlewares.use((req, res, next) => {
+        // Skip blocking for editor-related paths and API requests
+        const path = req.url || '';
+        if (path.includes('/api/') ||
+            path.includes('/editor/') ||
+            path.includes('/@fs/') ||
+            path.endsWith('.js') ||
+            path.endsWith('.css') ||
+            path.endsWith('.json')) {
+          return next();
+        }
+
         const raw = req.headers['user-agent']?.match(/Chrom(e|ium)\/([0-9]+)\./);
 
         if (raw) {
