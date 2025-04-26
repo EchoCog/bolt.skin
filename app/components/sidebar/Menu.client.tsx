@@ -4,10 +4,13 @@ import { toast } from 'react-toastify';
 import { Dialog, DialogButton, DialogDescription, DialogRoot, DialogTitle } from '~/components/ui/Dialog';
 import { ThemeSwitch } from '~/components/ui/ThemeSwitch';
 import { db, deleteById, getAll, chatId, type ChatHistoryItem } from '~/lib/persistence';
+import { memoryGetAll, memoryDeleteById } from '~/lib/persistence/memory-fallback';
 import { cubicEasingFn } from '~/utils/easings';
-import { logger } from '~/utils/logger';
+import { createScopedLogger } from '~/utils/logger';
 import { HistoryItem } from './HistoryItem';
 import { binDates } from './date-binning';
+
+const logger = createScopedLogger('Menu');
 
 const menuVariants = {
   closed: {
@@ -37,34 +40,47 @@ export function Menu() {
   const [list, setList] = useState<ChatHistoryItem[]>([]);
   const [open, setOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState<DialogContent>(null);
+  const [usingMemoryFallback, setUsingMemoryFallback] = useState(false);
+
+  // Detect if we're using memory fallback on component mount
+  useEffect(() => {
+    // If we don't have db but we've imported memoryGetAll, we must be using fallback
+    setUsingMemoryFallback(!db && typeof memoryGetAll === 'function');
+  }, []);
 
   const loadEntries = useCallback(() => {
-    if (db) {
-      getAll(db)
-        .then((list) => list.filter((item) => item.urlId && item.description))
-        .then(setList)
-        .catch((error) => toast.error(error.message));
-    }
+    // Choose either IndexedDB or memory fallback based on availability
+    const getEntriesPromise = db ? getAll(db) : memoryGetAll();
+    
+    getEntriesPromise
+      .then((items) => items.filter((item) => item?.urlId && item?.description))
+      .then(setList)
+      .catch((error) => {
+        toast.error(`Failed to load chat history: ${error.message}`);
+        logger.error('Error loading entries', error);
+      });
   }, []);
 
   const deleteItem = useCallback((event: React.UIEvent, item: ChatHistoryItem) => {
     event.preventDefault();
 
-    if (db) {
-      deleteById(db, item.id)
-        .then(() => {
-          loadEntries();
+    const deletePromise = db 
+      ? deleteById(db, item.id)
+      : memoryDeleteById(item.id);
+    
+    deletePromise
+      .then(() => {
+        loadEntries();
 
-          if (chatId.get() === item.id) {
-            // hard page navigation to clear the stores
-            window.location.pathname = '/';
-          }
-        })
-        .catch((error) => {
-          toast.error('Failed to delete conversation');
-          logger.error(error);
-        });
-    }
+        if (chatId.get() === item.id) {
+          // hard page navigation to clear the stores
+          window.location.pathname = '/';
+        }
+      })
+      .catch((error) => {
+        toast.error('Failed to delete conversation');
+        logger.error('Error deleting entry', error);
+      });
   }, []);
 
   const closeDialog = () => {
@@ -75,7 +91,7 @@ export function Menu() {
     if (open) {
       loadEntries();
     }
-  }, [open]);
+  }, [open, loadEntries]);
 
   useEffect(() => {
     const enterThreshold = 40;
@@ -106,7 +122,16 @@ export function Menu() {
       variants={menuVariants}
       className="flex flex-col side-menu fixed top-0 w-[350px] h-full bg-bolt-elements-background-depth-2 border-r rounded-r-3xl border-bolt-elements-borderColor z-sidebar shadow-xl shadow-bolt-elements-sidebar-dropdownShadow text-sm"
     >
-      <div className="flex items-center h-[var(--header-height)]">{/* Placeholder */}</div>
+      <div className="flex items-center h-[var(--header-height)]">
+        {usingMemoryFallback && (
+          <div className="px-4 py-2 text-xs text-amber-500">
+            <div className="flex items-center gap-1">
+              <span className="i-ph:warning-circle"></span>
+              <span>Using memory storage (session only)</span>
+            </div>
+          </div>
+        )}
+      </div>
       <div className="flex-1 flex flex-col h-full w-full overflow-hidden">
         <div className="p-4">
           <a

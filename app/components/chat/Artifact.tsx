@@ -7,6 +7,9 @@ import type { ActionState } from '~/lib/runtime/action-runner';
 import { workbenchStore } from '~/lib/stores/workbench';
 import { classNames } from '~/utils/classNames';
 import { cubicEasingFn } from '~/utils/easings';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('Artifact');
 
 const highlighterOptions = {
   langs: ['shell'],
@@ -30,6 +33,7 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
 
   const artifacts = useStore(workbenchStore.artifacts);
   const artifact = artifacts[messageId];
+  const files = useStore(workbenchStore.files);
 
   const actions = useStore(
     computed(artifact.runner.actions, (actions) => {
@@ -48,15 +52,43 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
     }
   }, [actions]);
 
+  // Find any file actions and set the first one as the selected file when opening the workbench
+  const handleOpenWorkbench = () => {
+    const showWorkbench = workbenchStore.showWorkbench.get();
+    
+    // Toggle workbench display
+    workbenchStore.showWorkbench.set(!showWorkbench);
+    
+    // If we're opening the workbench (not closing it)
+    if (!showWorkbench) {
+      let filePathToShow = null;
+
+      // Look for file-type actions
+      for (const action of actions) {
+        if (action.type === 'file' && action.filePath) {
+          filePathToShow = action.filePath;
+          break;
+        }
+      }
+
+      // If we found a file, select it in the editor
+      if (filePathToShow && files[filePathToShow]) {
+        logger.info(`Setting selected file to ${filePathToShow}`);
+        
+        // Short delay to ensure workbench is open before selecting file
+        setTimeout(() => {
+          workbenchStore.setSelectedFile(filePathToShow);
+        }, 100);
+      }
+    }
+  };
+
   return (
     <div className="artifact border border-bolt-elements-borderColor flex flex-col overflow-hidden rounded-lg w-full transition-border duration-150">
       <div className="flex">
         <button
           className="flex items-stretch bg-bolt-elements-artifacts-background hover:bg-bolt-elements-artifacts-backgroundHover w-full overflow-hidden"
-          onClick={() => {
-            const showWorkbench = workbenchStore.showWorkbench.get();
-            workbenchStore.showWorkbench.set(!showWorkbench);
-          }}
+          onClick={handleOpenWorkbench}
         >
           <div className="px-5 p-3.5 w-full text-left">
             <div className="w-full text-bolt-elements-textPrimary font-medium leading-5 text-sm">{artifact?.title}</div>

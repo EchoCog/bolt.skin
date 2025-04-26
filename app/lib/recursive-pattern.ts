@@ -1,4 +1,4 @@
-import type { } from '~/types/marduk';
+import type {} from '~/types/marduk';
 
 interface RecursiveAgent {
   id: string;
@@ -20,7 +20,7 @@ export class RecursivePattern {
     if (!this._arenas.has(agent.arena)) {
       throw new Error(`Arena ${agent.arena} not recognized`);
     }
-    
+
     this._agents.set(agent.id, agent);
   }
 
@@ -28,11 +28,11 @@ export class RecursivePattern {
   resolveNamespace(path: string[]): string {
     return path.reduce((ns, segment) => {
       const agent = this._agents.get(segment);
-      
+
       if (agent) {
         return `${ns}/${agent.namespace}`;
       }
-      
+
       return `${ns}/${segment}`;
     }, '');
   }
@@ -41,12 +41,11 @@ export class RecursivePattern {
   validateBoundary(agent: string, target: string): boolean {
     const sourceAgent = this._agents.get(agent);
     const targetAgent = this._agents.get(target);
-    
+
     if (!sourceAgent || !targetAgent) {
       return false;
     }
 
-    return sourceAgent.arena === targetAgent.arena || 
-      this._arenas.has(targetAgent.arena);
+    return sourceAgent.arena === targetAgent.arena || this._arenas.has(targetAgent.arena);
   }
 }

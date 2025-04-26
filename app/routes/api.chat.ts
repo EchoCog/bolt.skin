@@ -1,8 +1,9 @@
 import { type ActionFunctionArgs } from '@remix-run/cloudflare';
 import { MAX_RESPONSE_SEGMENTS, MAX_TOKENS } from '~/lib/.server/llm/constants';
-import { CONTINUE_PROMPT } from '~/lib/.server/llm/prompts';
+import { CONTINUE_PROMPT, getSystemPrompt } from '~/lib/.server/llm/prompts1';
 import { streamText, type Messages, type StreamingOptions } from '~/lib/.server/llm/stream-text';
 import SwitchableStream from '~/lib/.server/llm/switchable-stream';
+import { WORK_DIR } from '~/utils/constants';
 
 export async function action(args: ActionFunctionArgs) {
   return chatAction(args);
@@ -10,6 +11,18 @@ export async function action(args: ActionFunctionArgs) {
 
 async function chatAction({ context, request }: ActionFunctionArgs) {
   const { messages } = await request.json<{ messages: Messages }>();
+  
+  // Ensure the first message includes the artifact-aware system prompt if it's a system message
+  if (messages.length > 0 && messages[0].role === 'system') {
+    // Replace with the artifact-aware system prompt
+    messages[0].content = getSystemPrompt(WORK_DIR);
+  } else if (messages.length === 0 || messages[0].role !== 'system') {
+    // Insert the artifact-aware system prompt if no system message exists
+    messages.unshift({
+      role: 'system',
+      content: getSystemPrompt(WORK_DIR)
+    });
+  }
 
   const stream = new SwitchableStream();
 
