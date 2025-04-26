@@ -12,15 +12,15 @@ export async function action(args: ActionFunctionArgs) {
 async function chatAction({ context, request }: ActionFunctionArgs) {
   const { messages } = await request.json<{ messages: Messages }>();
 
-  // Ensure the first message includes the artifact-aware system prompt if it's a system message
-  if (messages.length > 0 && messages[0].role === 'system') {
-    // Replace with the artifact-aware system prompt
-    messages[0].content = getSystemPrompt(WORK_DIR);
-  } else if (messages.length === 0 || messages[0].role !== 'system') {
-    // Insert the artifact-aware system prompt if no system message exists
+  // ensure the first message includes a system prompt if needed
+  if (messages.length > 0 && messages[0].role === 'user' && messages[0].content.includes('system_prompt:')) {
+    // replace with the artifact-aware system prompt via the system parameter
+    messages[0].content = messages[0].content.replace(/system_prompt:.*/, '');
+  } else if (messages.length === 0) {
+    // insert a user message if none exists
     messages.unshift({
-      role: 'system',
-      content: getSystemPrompt(WORK_DIR)
+      role: 'user',
+      content: ''
     });
   }
 
