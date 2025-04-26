@@ -9,7 +9,8 @@
   "scripts": {
     "deploy": "pnpm run build && wrangler pages deploy",
     "build": "remix vite:build --force",
-    "dev": "remix vite:dev",
+    "cleanup-ports": "bash ./scripts/cleanup-ports.sh",
+    "dev": "pnpm run cleanup-ports && remix vite:dev",
     "test": "vitest --run",
     "test:watch": "vitest",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
@@ -17,7 +18,7 @@
     "start": "bash -c 'source ./bindings.sh && wrangler pages dev ./build/client $(echo $bindings)'",
     "typecheck": "tsc",
     "typegen": "wrangler types",
-    "preview": "pnpm run build && pnpm run start"
+    "preview": "pnpm run cleanup-ports && pnpm run build && pnpm run start"
   },
   "engines": {
     "node": ">=18.18.0"
