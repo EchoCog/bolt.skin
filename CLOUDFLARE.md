@@ -43,13 +43,16 @@ The following environment variables must be set in Cloudflare Pages:
 ## How to Set Environment Variables
 1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
 2. Navigate to Pages > bolt-echo > Settings > Environment variables
-3. Add both required variables
+3. Add both required variables:
+   - `ANTHROPIC_API_KEY`: Your Anthropic API key from https://console.anthropic.com/
+   - `VITE_LOG_LEVEL`: Set to `debug` for development or `info` for production
 4. Trigger a new deployment
 
 ## Project Configuration
 - Build command: `npm run build`
 - Build output directory: `build/client`
 - Node.js version: 20.17.0
+- Framework: Remix with Cloudflare Pages Functions
 
 ## Custom Domains
 - Production: bolt.echocog.org
