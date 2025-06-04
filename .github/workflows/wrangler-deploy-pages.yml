@@ -1,4 +1,5 @@
 # Sample workflow for building and deploying a Jekyll site to GitHub Pages
+# CLUE 1: Here lies the shadow of the octopus. Trace the build artifact's journey—where does it vanish, and what does it leave behind?
 name: Deploy Cloudflare Pages with Wrangler
 
 on:
