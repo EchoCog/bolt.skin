@@ -10,7 +10,7 @@ interface RecursiveAgent {
 export class RecursivePattern {
   private agents: Map<string, RecursiveAgent>;
   private arenas: Set<string>;
-  
+
   constructor() {
     this.agents = new Map();
     this.arenas = new Set(['ElizaOS', 'bolt.echo', 'app']);
@@ -20,6 +20,7 @@ export class RecursivePattern {
     if (!this.arenas.has(agent.arena)) {
       throw new Error(`Arena ${agent.arena} not recognized`);
     }
+
     this.agents.set(agent.id, agent);
   }
 
@@ -27,9 +28,11 @@ export class RecursivePattern {
   resolveNamespace(path: string[]): string {
     return path.reduce((ns, segment) => {
       const agent = this.agents.get(segment);
+
       if (agent) {
         return `${ns}/${agent.namespace}`;
       }
+
       return `${ns}/${segment}`;
     }, '');
   }
@@ -38,13 +41,12 @@ export class RecursivePattern {
   validateBoundary(agent: string, target: string): boolean {
     const sourceAgent = this.agents.get(agent);
     const targetAgent = this.agents.get(target);
-    
+
     if (!sourceAgent || !targetAgent) {
       return false;
     }
 
     // Check if target is in allowed arena
-    return sourceAgent.arena === targetAgent.arena || 
-           this.arenas.has(targetAgent.arena);
+    return sourceAgent.arena === targetAgent.arena || this.arenas.has(targetAgent.arena);
   }
 }

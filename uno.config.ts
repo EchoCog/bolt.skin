@@ -10,5 +10,5 @@ export default defineConfig({
   },
   rules: [
     // Add your custom rules here
-  ]
+  ],
 });
