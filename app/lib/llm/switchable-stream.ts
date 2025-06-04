@@ -26,7 +26,9 @@ export default class SwitchableStream extends TransformStream {
 
     this._currentReader = newStream.getReader();
 
-    this._pumpStream();
+    this._pumpStream().catch((error) => {
+      console.error('Error in _pumpStream:', error);
+    });
 
     this._switches++;
   }
