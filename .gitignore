@@ -29,4 +29,7 @@ dist-ssr
 .wrangler
 _worker.bundle
 
+# Vite timestamp files
+.viteconfig/*.timestamp-*
+
 .windsurfrules
