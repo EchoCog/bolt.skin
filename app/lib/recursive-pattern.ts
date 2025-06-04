@@ -1,5 +1,6 @@
 import type { MardukDaemon } from '../types/marduk';
 
+// CLUE 5: The octopus dwells in the recursive depths—seek the arena where three realms converge as one.
 interface RecursiveAgent {
   id: string;
   namespace: string;
