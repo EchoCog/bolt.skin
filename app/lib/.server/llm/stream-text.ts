@@ -4,6 +4,10 @@ import { getAnthropicModel } from '~/lib/.server/llm/model';
 import { MAX_TOKENS } from './constants';
 import { getSystemPrompt } from './prompts';
 
+interface Env {
+  ANTHROPIC_API_KEY: string;
+}
+
 interface ToolResult<Name extends string, Args, Result> {
   toolCallId: string;
   toolName: Name;
@@ -14,7 +18,7 @@ interface ToolResult<Name extends string, Args, Result> {
 interface Message {
   role: 'user' | 'assistant';
   content: string;
-  toolInvocations?: { state: "result" } & ToolResult<string, unknown, unknown>[];
+  toolInvocations?: { state: 'result' } & ToolResult<string, unknown, unknown>[];
 }
 
 export type Messages = Message[];
