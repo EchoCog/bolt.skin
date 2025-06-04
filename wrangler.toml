@@ -8,7 +8,3 @@ custom_domain = "bolt.echocog.org"
 
 [env.preview]
 custom_domain = "staging.echocog.org"
-# <<<<<<< codespace-probable-winner-wr5j9j5x59xc9rx6
-
-# =======
-# >>>>>>> main
