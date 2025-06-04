@@ -13,16 +13,16 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: []
-        }
-      }
+          vendor: [],
+        },
+      },
     },
     chunkSizeWarningLimit: 500,
   },
   optimizeDeps: {
-    include: ['react-dom/server']
+    include: ['react-dom/server'],
   },
   ssr: {
-    external: ['react-dom/server']
-  }
+    external: ['react-dom/server'],
+  },
 });
