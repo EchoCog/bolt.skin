@@ -7,7 +7,22 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [UnoCSS(), remix(), nodePolyfills(), optimizeCssModules(), tsconfigPaths(), react()],
+  plugins: [
+    UnoCSS(),
+    remix({
+      future: {
+        v3_fetcherPersist: true,
+        v3_lazyRouteDiscovery: true,
+        v3_relativeSplatPath: true,
+        v3_singleFetch: true,
+        v3_throwAbortReason: true,
+      },
+    }),
+    nodePolyfills(),
+    optimizeCssModules(),
+    tsconfigPaths(),
+    react(),
+  ],
   build: {
     target: 'es2022',
     rollupOptions: {
