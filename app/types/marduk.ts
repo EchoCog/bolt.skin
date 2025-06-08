@@ -3,5 +3,5 @@ export interface MardukDaemon {
   namespace: string;
   arena: string;
 
-  // Add any other properties you need from the Marduk daemon
+  // add any other properties you need from the Marduk daemon
 }
