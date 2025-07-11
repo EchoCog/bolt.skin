@@ -5,7 +5,12 @@ export async function request(url: string, init?: CommonRequest) {
     const nodeFetch = await import('node-fetch');
     const https = await import('node:https');
 
-    const agent = url.startsWith('https') ? new https.Agent({ rejectUnauthorized: false }) : undefined;
+    const agent = url.startsWith('https') 
+      ? new https.Agent({ 
+          rejectUnauthorized: true, 
+          ca: import.meta.env.DEV ? await import('fs').promises.readFile('./path/to/dev-cert.pem') : undefined 
+        }) 
+      : undefined;
 
     return nodeFetch.default(url, { ...init, agent });
   }
