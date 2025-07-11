@@ -12,7 +12,7 @@
         "dev": "remix vite:dev",
         "test": "vitest --run",
         "test:watch": "vitest",
-        "lint": "eslint --cache --cache-location ./node/.cache/eslint .",
+        "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
         "lint:fix": "pnpm run lint -- --fix",
         "start": "pnpm run bindings && wrangler pages dev ./modules",
         "typecheck": "tsc",
