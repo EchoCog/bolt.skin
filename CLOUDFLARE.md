@@ -49,9 +49,10 @@ The following environment variables must be set in Cloudflare Pages:
 4. Trigger a new deployment
 
 ## Project Configuration
-- Build command: `npm run build`
+- Build command: `pnpm run build`
 - Build output directory: `build/client`
-- Node.js version: 20.17.0
+- Node.js version: 20.15.1
+- Package manager: pnpm@9.4.0
 - Framework: Remix with Cloudflare Pages Functions
 
 ## Custom Domains
