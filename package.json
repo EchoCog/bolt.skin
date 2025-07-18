@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "deploy": "pnpm run build && wrangler pages deploy",
-    "build": "remix vite:build --force && wrangler pages functions build functions-src --external vite-plugin-node-polyfills --outfile=build/client/_worker.js",
+    "build": "remix vite:build --force && wrangler pages functions build functions-src --external vite-plugin-node-polyfills --outdir=build/client",
     "dev": "remix vite:dev",
     "test": "vitest --run",
     "test:watch": "vitest",
