@@ -3,9 +3,5 @@ name = 'bolt-echo'
 main = "worker.js"
 compatibility_date = "2025-07-18"
 compatibility_flags = ["nodejs_compat"]
-# wrangler.toml (wrangler v3.88.0^)
-[observability.logs]
-enabled = true
-
 
 
