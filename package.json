@@ -14,7 +14,7 @@
         "test:watch": "vitest",
         "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
         "lint:fix": "pnpm run lint -- --fix",
-        "start": "pnpm run bindings && wrangler pages dev ./modules",
+        "start": "pnpm run bindings && wrangler pages dev ./build/client",
         "typecheck": "tsc",
         "typegen": "wrangler types",
         "preview": "pnpm run build && pnpm run start",
