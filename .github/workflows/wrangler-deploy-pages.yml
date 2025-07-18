@@ -40,8 +40,8 @@ jobs:
 
       # Step 5: Build Project
       - name: Build Project
-        run: pnpm run build
+        run: npm run build:pages
 
       # Step 6: Deploy to Cloudflare Pages
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy ./build/client
+        run: npx wrangler pages deploy ./build/client --project-name bolt-echo
