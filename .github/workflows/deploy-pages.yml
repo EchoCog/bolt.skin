@@ -57,3 +57,4 @@ jobs:
       - name: Deploy to Cloudflare Pages
         run: wrangler pages deploy ./build/client
  #       run: npx wrangler pages deploy ./build/client
+ 
